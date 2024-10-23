@@ -1,6 +1,6 @@
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 
 
-class ReadOnlyOrSuperuserPermission(BasePermission):
+class PostAnyOrSuperuserPermission(BasePermission):
     def has_permission(self, request, view) -> bool:
-        return request.method in SAFE_METHODS or request.user.is_superuser
+        return request.method == "POST" or request.user.is_superuser

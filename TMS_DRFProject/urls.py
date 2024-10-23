@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from djoser.views import TokenCreateView, TokenDestroyView
-
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,4 +25,9 @@ urlpatterns = [
     path("api/v1/users/", include("users.api.urls")),
     path("api/auth/token/", TokenCreateView.as_view(), name="token_create"),
     path("api/auth/token/destroy/", TokenDestroyView.as_view(), name="token_destroy"),
+
+    # JWT
+    path('api/jwt/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/jwt/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/jwt/verify/', TokenVerifyView.as_view(), name='token_verify'),
 ]
