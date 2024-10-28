@@ -13,6 +13,8 @@
 
 [Django Cache](docs/Django%20Cache.svg)
 
+[Детальная схема DRF CBV](docs/drf-cbv.drawio.pdf)
+
 
 ## Задания
 
