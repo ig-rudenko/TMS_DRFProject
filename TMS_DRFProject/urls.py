@@ -14,20 +14,31 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
+from debug_toolbar.toolbar import debug_toolbar_urls
 from django.contrib import admin
 from django.urls import path, include
 from djoser.views import TokenCreateView, TokenDestroyView
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
+from django.conf import settings
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+    TokenVerifyView,
+)
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path("admin/", admin.site.urls),
     path("api/v1/", include("notes.api.urls")),
     path("api/v1/users/", include("users.api.urls")),
     path("api/auth/token/", TokenCreateView.as_view(), name="token_create"),
     path("api/auth/token/destroy/", TokenDestroyView.as_view(), name="token_destroy"),
-
     # JWT
-    path('api/jwt/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/jwt/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('api/jwt/verify/', TokenVerifyView.as_view(), name='token_verify'),
+    path("api/jwt/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("api/jwt/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    path("api/jwt/verify/", TokenVerifyView.as_view(), name="token_verify"),
 ]
+
+
+if settings.DEBUG:
+    # Debug only
+    urlpatterns += debug_toolbar_urls()

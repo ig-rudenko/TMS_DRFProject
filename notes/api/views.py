@@ -1,34 +1,80 @@
 from django.db.models import When, Value
 from django.db.models import Case
 from django.db.models.functions.text import Length, Concat, Substr, CharField
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, RetrieveDestroyAPIView
+from rest_framework.generics import (
+    ListCreateAPIView,
+    RetrieveUpdateDestroyAPIView,
+    RetrieveDestroyAPIView,
+)
 from rest_framework.pagination import PageNumberPagination
-
+from django.core.cache import cache
+from django.conf import settings
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from django.core.files.storage import default_storage
 
+from .filters import NoteFilter
 from .permissions import IsOwnerOrReadOnly
-from .serializers import NoteSerializer, CommentSerializer, TagSerializer, NoteCreateSerializer
+from .serializers import (
+    NoteSerializer,
+    CommentSerializer,
+    TagSerializer,
+    NoteCreateSerializer,
+    NoteShortSerializer,
+    ImageUploadSerializer,
+)
 from ..models import Note, Comment, Tag
 
 
 class NoteListCreateAPIView(ListCreateAPIView):
-    serializer_class = NoteCreateSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
     pagination_class = PageNumberPagination
-    queryset = Note.objects.all()
+    filterset_class = NoteFilter
 
-    # def get_queryset(self):
-    #     qs = Note.objects.all().annotate(
-    #         content_length=Length('content'),
-    #         short_content=Case(
-    #             When(content_length__gt=20, then=Concat(Substr('content', 1, 20), Value('...'))),
-    #             default="content",
-    #             output_field=CharField()
-    #         )
-    #     ).only("id", "title", "owner", "created_at", "updated_at")
-    #
-    #     print(qs.query)
-    #     return qs
+    def get_serializer_class(self):
+        if self.request.method == "POST":
+            return NoteCreateSerializer
+        return NoteShortSerializer
+
+    def get_queryset(self):
+        qs = (
+            Note.objects.all()
+            .select_related("owner")  # ForeignKey
+            .prefetch_related("tags")  # ManyToMany
+            .annotate(
+                content_length=Length("content"),
+                short_content=Case(
+                    When(
+                        content_length__gt=20,
+                        then=Concat(Substr("content", 1, 20), Value("...")),
+                    ),
+                    default="content",
+                    output_field=CharField(),
+                ),
+            )
+            .only("id", "title", "owner", "created_at", "updated_at", "owner__username")
+        )
+
+        # params = self.request.query_params
+        #
+        # if params.get("search"):
+        #     # Либо поиск по заголовку, либо по тексту
+        #     qs = qs.filter(
+        #         Q(title__icontains=params["search"])
+        #         | Q(content__icontains=params["search"]),
+        #     )
+        #
+        # if params.get("owner"):
+        #     # Поиск по автору
+        #     qs = qs.filter(owner__username=params["owner"])
+        #
+        # if params.get("from"):
+        #     qs = qs.filter(created_at__gte=params["from"])
+        #
+        # if params.get("to"):
+        #     qs = qs.filter(created_at__lte=params["to"])
+        return qs
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)

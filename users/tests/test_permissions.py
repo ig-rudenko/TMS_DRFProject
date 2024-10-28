@@ -58,29 +58,41 @@ class TestCreateUserPermissions(TestCase):
     def setUpTestData(cls):
         cls.client = APIClient()
         # /api/v1/users/
-        cls.url = reverse('users-api-v1:list-create')
+        cls.url = reverse("users-api-v1:list-create")
 
     def test_create_user_by_anonymous(self):
-        response = self.client.post(self.url, {
-            'username': 'test',
-            'email': 'test@test.com',
-            'password': 'test',
-        }, format='json')
+        response = self.client.post(
+            self.url,
+            {
+                "username": "test",
+                "email": "test@test.com",
+                "password": "test",
+            },
+            format="json",
+        )
         self.assertEqual(response.status_code, 201)
 
     def test_create_user_without_email_by_anonymous(self):
-        response = self.client.post(self.url, {
-            'username': 'test',
-            'password': 'test',
-        }, format='json')
+        response = self.client.post(
+            self.url,
+            {
+                "username": "test",
+                "password": "test",
+            },
+            format="json",
+        )
         self.assertEqual(response.status_code, 400)
 
     def test_create_user_with_empty_username_by_anonymous(self):
-        response = self.client.post(self.url, {
-            'username': '',
-            'email': 'test@test.com',
-            'password': 'test',
-        }, format='json')
+        response = self.client.post(
+            self.url,
+            {
+                "username": "",
+                "email": "test@test.com",
+                "password": "test",
+            },
+            format="json",
+        )
         self.assertEqual(response.status_code, 400)
 
     def test_cant_read_user_list_by_anonymous(self):
@@ -88,8 +100,8 @@ class TestCreateUserPermissions(TestCase):
         self.assertEqual(response.status_code, 403)
 
     def test_can_read_user_list_by_superuser(self):
-        User.objects.create_superuser('test', 'test@test.com', 'test')
-        superuser = User.objects.create_superuser('superuser', 'superuser@test.com', 'superuser')
+        User.objects.create_superuser("test", "test@test.com", "test")
+        superuser = User.objects.create_superuser("superuser", "superuser@test.com", "superuser")
         self.client.force_login(superuser)
 
         response = self.client.get(self.url)

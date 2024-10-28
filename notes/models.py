@@ -19,8 +19,8 @@ class Note(models.Model):
         return self.title
 
     class Meta:
-        db_table = 'notes'
-        ordering = ['-created_at']
+        db_table = "notes"
+        ordering = ["-created_at"]
 
 
 class Tag(models.Model):
@@ -31,8 +31,8 @@ class Tag(models.Model):
         return self.name
 
     class Meta:
-        db_table = 'tags'
-        ordering = ['name']
+        db_table = "tags"
+        ordering = ["name"]
 
 
 class Comment(models.Model):
@@ -47,5 +47,5 @@ class Comment(models.Model):
         return self.content
 
     class Meta:
-        db_table = 'comments'
-        ordering = ['-created_at']
+        db_table = "comments"
+        ordering = ["-created_at"]

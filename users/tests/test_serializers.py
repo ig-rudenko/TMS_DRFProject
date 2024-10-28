@@ -7,11 +7,7 @@ from ..models import User
 class TestUserSerializer(TestCase):
 
     def test_user_serializer_password_encryption(self):
-        data = {
-            "username": "test",
-            "password": "test",
-            "email": "test@test.com"
-        }
+        data = {"username": "test", "password": "test", "email": "test@test.com"}
 
         serializer = UserSerializer(data=data)
 

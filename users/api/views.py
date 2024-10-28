@@ -13,10 +13,11 @@ from ..models import User
 
 # Function based view
 
-@api_view(['POST', 'GET'])
+
+@api_view(["POST", "GET"])
 @permission_classes([IsAdminUser])
 def create_user_fbv_api(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         serializer = UserSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -34,7 +35,7 @@ class UserListCreateAPIView(ListCreateAPIView):
     permission_classes = [PostAnyOrSuperuserPermission]
 
     def get(self, request, *args, **kwargs):
-        page = self.request.query_params.get('page', 1)
+        page = self.request.query_params.get("page", 1)
         cache_key = f"user_lists:{page}"
         cache_timeout = 10 * 60
 

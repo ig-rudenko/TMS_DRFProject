@@ -8,4 +8,4 @@ class User(AbstractUser):
     email = models.EmailField()
 
     class Meta:
-        db_table = 'users'
+        db_table = "users"
