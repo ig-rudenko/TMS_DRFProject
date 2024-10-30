@@ -52,14 +52,16 @@ const toggle = () => {
       <template #end>
         <div class="flex items-center gap-2">
           <div>
-            <Button icon="pi pi-circle" v-if="currentTheme == 'auto'" @click="toggle" v-tooltip="'Влючить светлую тему'"
+            <Button icon="pi pi-circle" v-if="currentTheme == 'auto'" @click="toggle"
+                    v-tooltip.left="'Включить светлую тему'"
                     class="hover:text-gray-900 dark:text-gray-400 hover:dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600 bg-opacity-15"
                     text/>
-            <Button icon="pi pi-sun" v-if="currentTheme == 'light'" @click="toggle" v-tooltip="'Влючить темную тему'"
+            <Button icon="pi pi-sun" v-if="currentTheme == 'light'" @click="toggle"
+                    v-tooltip.left="'Включить темную тему'"
                     class="hover:text-gray-900 dark:text-gray-400 hover:dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600 bg-opacity-15"
                     text/>
             <Button icon="pi pi-moon" v-if="currentTheme == 'dark'" @click="toggle"
-                    v-tooltip="'Выбрать тему автоматически'"
+                    v-tooltip.left="'Выбрать тему автоматически'"
                     class="hover:text-gray-900 dark:text-gray-400 hover:dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600 bg-opacity-15"
                     text/>
           </div>

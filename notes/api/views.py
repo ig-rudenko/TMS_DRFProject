@@ -1,6 +1,7 @@
 from django.db.models import When, Value
 from django.db.models import Case
 from django.db.models.functions.text import Length, Concat, Substr, CharField
+from drf_spectacular.utils import extend_schema
 from rest_framework.generics import (
     ListAPIView,
     ListCreateAPIView,
@@ -17,6 +18,7 @@ from django.core.files.storage import default_storage
 
 from .filters import NoteFilter
 from .permissions import IsOwnerOrReadOnly
+from .schemas.serializers import SchemaImageUploadResponseSerializer
 from .serializers import (
     NoteSerializer,
     CommentSerializer,
@@ -40,7 +42,7 @@ class NoteListCreateAPIView(ListCreateAPIView):
 
     def get_queryset(self):
         qs = (
-            Note.objects.all()
+            Note.objects.filter(status=Note.Status.published.value)
             .select_related("owner")  # ForeignKey
             .prefetch_related("tags")  # ManyToMany
             .annotate(
@@ -104,6 +106,28 @@ class CommentRetrieveDestroyAPIView(RetrieveDestroyAPIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
     lookup_url_kwarg = "comment_id"
     lookup_field = "id"
+
+
+class ImageUploadView(APIView):
+    """
+    Загрузка изображения и возврат ссылки на неё.
+    """
+
+    serializer_class = ImageUploadSerializer
+
+    def post(self, request, *args, **kwargs):
+        print(request.data)
+
+        serializer = ImageUploadSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        image = serializer.validated_data["image"]
+        # Сохранение изображения
+        image_path = default_storage.save(f"uploads/{image.name}", image)
+        # Генерация URL
+        image_url = request.build_absolute_uri(settings.MEDIA_URL + image_path)
+
+        return Response({"image_url": image_url}, status=201)
 
 
 class TagListAPIView(ListAPIView):

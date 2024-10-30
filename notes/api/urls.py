@@ -21,4 +21,5 @@ urlpatterns = [
         name="comment-detail",
     ),
     path("tags", views.TagListAPIView.as_view(), name="tag-list"),
+    path("upload-images", views.ImageUploadView.as_view(), name="upload-images"),
 ]

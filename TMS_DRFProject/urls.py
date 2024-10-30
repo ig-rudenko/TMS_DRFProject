@@ -18,8 +18,14 @@ Including another URLconf
 from debug_toolbar.toolbar import debug_toolbar_urls
 from django.contrib import admin
 from django.urls import path, include
+from django.conf.urls.static import static
 from djoser.views import TokenCreateView, TokenDestroyView
 from django.conf import settings
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularSwaggerView,
+    SpectacularRedocView,
+)
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -37,9 +43,17 @@ urlpatterns = [
     path("api/jwt/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/jwt/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("api/jwt/verify/", TokenVerifyView.as_view(), name="token_verify"),
+    # JSON SCHEMA
+    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+    # Optional UI:
+    path(
+        "api/docs", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"
+    ),
+    path("api/redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
 ]
 
 
 if settings.DEBUG:
     # Debug only
     urlpatterns += debug_toolbar_urls()
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

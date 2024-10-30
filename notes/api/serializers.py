@@ -5,7 +5,8 @@ from ..models import Note, Comment, Tag
 
 
 class ImageUploadSerializer(serializers.Serializer):
-    image = serializers.ImageField()
+    image = serializers.ImageField(write_only=True)
+    image_url = serializers.URLField(read_only=True)
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -14,9 +15,6 @@ class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
         fields = ("name", "color")
-        # extra_kwargs = {
-        #     "name": {"validators": []},  # Отключаем проверку уникальности
-        # }
 
 
 class NoteCreateSerializer(serializers.ModelSerializer):
@@ -49,6 +47,14 @@ class NoteCreateSerializer(serializers.ModelSerializer):
     def validate(self, data):
         if data["title"] == data["content"]:
             raise serializers.ValidationError("Title and content must be different")
+
+        waiting = Note.objects.filter(
+            status=Note.Status.waiting.value, owner=self.context["request"].user
+        ).count()
+
+        if waiting >= 3:
+            raise serializers.ValidationError("You can't create more than 3 notes")
+
         return data
 
     def create(self, validated_data):
@@ -85,7 +91,7 @@ class NoteCreateSerializer(serializers.ModelSerializer):
 
 
 class NoteShortSerializer(serializers.ModelSerializer):
-    short_content = serializers.SerializerMethodField()
+    content_short = serializers.SerializerMethodField()
     tags = TagSerializer(many=True)
     owner = serializers.CharField(source="owner.username")
 
@@ -95,7 +101,7 @@ class NoteShortSerializer(serializers.ModelSerializer):
             "id",
             "title",
             "content",
-            "short_content",
+            "content_short",
             "image",
             "owner",
             "created_at",
@@ -107,7 +113,7 @@ class NoteShortSerializer(serializers.ModelSerializer):
             "content": {"write_only": True},
         }
 
-    def get_short_content(self, obj):
+    def get_content_short(self, obj):
         return getattr(obj, "short_content", None)
 
 

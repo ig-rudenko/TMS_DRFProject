@@ -10,6 +10,15 @@ class Note(models.Model):
     image = models.CharField(max_length=255, blank=True, null=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
 
+    class Status(models.Choices):
+        waiting = "waiting"
+        published = "published"
+        cancelled = "cancelled"
+
+    status = models.CharField(
+        max_length=20, choices=Status.choices, default=Status.waiting.value
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

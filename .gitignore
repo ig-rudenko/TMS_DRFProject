@@ -9,6 +9,7 @@ __pycache__/
 
 .idea
 api_test.py
+media
 
 # Distribution / packaging
 .Python
