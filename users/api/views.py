@@ -2,7 +2,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.generics import ListCreateAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAdminUser
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework import status
 from django.core.cache import cache
 
@@ -32,7 +32,7 @@ def create_user_fbv_api(request):
 class UserListCreateAPIView(ListCreateAPIView):
     serializer_class = UserSerializer
     queryset = User.objects.all()
-    permission_classes = [PostAnyOrSuperuserPermission]
+    # permission_classes = [PostAnyOrSuperuserPermission]
 
     def get(self, request, *args, **kwargs):
         page = self.request.query_params.get("page", 1)
@@ -47,3 +47,11 @@ class UserListCreateAPIView(ListCreateAPIView):
             cache.set(cache_key, data, cache_timeout)
 
         return Response(data)
+
+
+class UserDetailAPIView(APIView):
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        return Response(UserSerializer(request.user).data)

@@ -20,4 +20,5 @@ urlpatterns = [
         views.CommentRetrieveDestroyAPIView.as_view(),
         name="comment-detail",
     ),
+    path("tags", views.TagListAPIView.as_view(), name="tag-list"),
 ]

@@ -2,6 +2,7 @@ from django.db.models import When, Value
 from django.db.models import Case
 from django.db.models.functions.text import Length, Concat, Substr, CharField
 from rest_framework.generics import (
+    ListAPIView,
     ListCreateAPIView,
     RetrieveUpdateDestroyAPIView,
     RetrieveDestroyAPIView,
@@ -46,8 +47,8 @@ class NoteListCreateAPIView(ListCreateAPIView):
                 content_length=Length("content"),
                 short_content=Case(
                     When(
-                        content_length__gt=20,
-                        then=Concat(Substr("content", 1, 20), Value("...")),
+                        content_length__gt=200,
+                        then=Concat(Substr("content", 1, 200), Value("...")),
                     ),
                     default="content",
                     output_field=CharField(),
@@ -103,3 +104,9 @@ class CommentRetrieveDestroyAPIView(RetrieveDestroyAPIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
     lookup_url_kwarg = "comment_id"
     lookup_field = "id"
+
+
+class TagListAPIView(ListAPIView):
+    serializer_class = TagSerializer
+    queryset = Tag.objects.all()
+    pagination_class = None

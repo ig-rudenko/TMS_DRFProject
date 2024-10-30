@@ -30,6 +30,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/v1/", include("notes.api.urls")),
     path("api/v1/users/", include("users.api.urls")),
+    # Token
     path("api/auth/token/", TokenCreateView.as_view(), name="token_create"),
     path("api/auth/token/destroy/", TokenDestroyView.as_view(), name="token_destroy"),
     # JWT

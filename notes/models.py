@@ -7,7 +7,7 @@ User = get_user_model()
 class Note(models.Model):
     title = models.CharField(max_length=100)
     content = models.TextField()
-    image = models.ImageField(blank=True, null=True)
+    image = models.CharField(max_length=255, blank=True, null=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
 
     created_at = models.DateTimeField(auto_now_add=True)

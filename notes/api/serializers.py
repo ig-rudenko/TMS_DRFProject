@@ -88,7 +88,6 @@ class NoteShortSerializer(serializers.ModelSerializer):
     short_content = serializers.SerializerMethodField()
     tags = TagSerializer(many=True)
     owner = serializers.CharField(source="owner.username")
-    image = serializers.CharField()
 
     class Meta:
         model = Note
