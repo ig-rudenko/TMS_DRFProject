@@ -1,18 +1,24 @@
 <script setup lang="ts">
 import {Ref, ref} from "vue";
+import {FileUploadSelectEvent} from "primevue/fileupload";
+
+const emits = defineEmits(["fileSelect"]);
 
 const src: Ref<any> = ref(null);
+const file: Ref<File|null> = ref(null);
 
-function onFileSelect(event: any) {
-  const file = event.files[0];
+function onFileSelect(event: FileUploadSelectEvent) {
+  file.value = event.files[0];
   const reader = new FileReader();
 
   reader.onload = async (e) => {
     src.value = e.target?.result;
   };
 
-  reader.readAsDataURL(file);
+  if (file.value) reader.readAsDataURL(file.value);
+  emits("fileSelect", file.value);
 }
+
 </script>
 
 <template>

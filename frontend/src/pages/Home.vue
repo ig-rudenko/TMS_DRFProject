@@ -19,25 +19,26 @@ function getPage(page: number) {
       .catch(reason => errorToast("Ошибка при получении данных", errorFmt(reason)));
 }
 
-function search() {
-  // filter.value = newFilter;
-  // console.log(newFilter)
-  getPage(1)
-}
-
 getPage(1);
+
+function selectOwner(owner: string) {
+  filter.value.owner = owner;
+  getPage(1);
+}
 
 </script>
 
 <template>
   <Welcome/>
   <div class="flex justify-center p-6">
-    <NoteFilter :filter="filter" @search="search"/>
+    <NoteFilter :filter="filter" @search="() => getPage(1)"/>
   </div>
   <div class="flex items-center justify-center p-1 py-6 pb-8">
     <section class="rounded-xl flex flex-col">
       <div v-if="notes" class="flex flex-wrap justify-center gap-y-8 gap-x-4">
-        <NoteElement v-if="notes.results.length" v-for="note in notes.results" :key="note.id" :note="note" />
+        <NoteElement v-if="notes.results.length"
+                     @select:owner="selectOwner"
+                     v-for="note in notes.results" :key="note.id" :note="note" />
         <div v-else>
           <div class="dark:text-gray-300 text-3xl p-6">Не найдено</div>
         </div>

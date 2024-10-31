@@ -12,8 +12,10 @@ import errorFmt from "@/services/errorFmt.ts";
 
 onBeforeMount(async () => {
   const store = useStore();
-  if (!store.state.auth.status.loggedIn) await router.push("/auth/login")
+  if (!store.state.auth.status.loggedIn) await router.push("/auth/login");
 })
+
+const file = ref<File|null>(null);
 
 const note: Ref<BaseNoteType> = ref({
   title: "",
@@ -22,17 +24,17 @@ const note: Ref<BaseNoteType> = ref({
   tags: [],
 })
 
-function createNote() {
+async function createNote() {
+  if (!file.value) return;
+  const {image_url} = await noteService.uploadImage(file.value);
+  note.value.image = image_url;
+
   noteService.createNote(note.value).then(
       (note) => {
         successToast("Запись создана", "");
         router.push("/note/"+note.id)
       }
-  ).catch(
-      reason => {
-        errorToast("Ошибка", errorFmt(reason))
-      }
-  )
+  ).catch(reason => errorToast("Ошибка", errorFmt(reason)))
 }
 
 </script>
@@ -40,7 +42,7 @@ function createNote() {
 <template>
 <div class="md:w-2/3 mx-auto p-4">
   <div>
-    <UploadNotePreview/>
+    <UploadNotePreview @fileSelect="(f: File) => file = f" />
   </div>
 
   <div class="flex justify-center p-4">
