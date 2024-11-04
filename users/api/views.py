@@ -11,9 +11,6 @@ from .serializers import UserSerializer
 from ..models import User
 
 
-# Function based view
-
-
 @api_view(["POST", "GET"])
 @permission_classes([IsAdminUser])
 def create_user_fbv_api(request):
@@ -32,7 +29,7 @@ def create_user_fbv_api(request):
 class UserListCreateAPIView(ListCreateAPIView):
     serializer_class = UserSerializer
     queryset = User.objects.all()
-    # permission_classes = [PostAnyOrSuperuserPermission]
+    permission_classes = [PostAnyOrSuperuserPermission]
 
     def get(self, request, *args, **kwargs):
         page = self.request.query_params.get("page", 1)

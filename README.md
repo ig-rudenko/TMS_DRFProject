@@ -21,3 +21,26 @@
 [Задание 1. Приложение Events](docs/ex1.pdf)
 
 [Задание 2. Приложение Events](docs/ex2.pdf)
+
+[Задание 3. Приложение Events. Celery](docs/ex3-celery.pdf)
+
+
+## Запуск Celery
+
+Worker (Email):
+
+```shell
+celery -A TMS_DRFProject.celery:app worker -l info -P eventlet -Q email
+```
+
+Beat:
+
+```shell
+celery -A TMS_DRFProject.celery:app beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+```
+
+Flower:
+
+```shell
+celery -A TMS_DRFProject.celery:app flower --port=5555
+```

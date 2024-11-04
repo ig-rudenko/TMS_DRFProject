@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "djoser",
     "drf_spectacular",
+    "django_celery_beat",
 ]
 
 if DEBUG:
@@ -210,3 +211,24 @@ SPECTACULAR_SETTINGS = {
     "SERVE_INCLUDE_SCHEMA": False,
     # OTHER SETTINGS
 }
+
+
+CELERY_BROKER_URL = "redis://127.0.0.1:6379/0"
+CELERY_RESULT_BACKEND = "redis://127.0.0.1:6379/0"
+
+# Пример указания периодических задач
+# CELERY_BEAT_SCHEDULE = {
+#     "add-every-30-seconds": {  # Название периодической задачи.
+#         "task": "users.tasks.daily_notifications_task",
+#         "schedule": timedelta(seconds=20),  # Либо CRON формат записи.
+#         "args": (10, 23)
+#     },
+# }
+
+
+EMAIL_HOST = 'smtp.yandex.ru'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = ""
+EMAIL_HOST_PASSWORD = ""
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = True

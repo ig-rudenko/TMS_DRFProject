@@ -1,7 +1,6 @@
 from django.db.models import When, Value
 from django.db.models import Case
 from django.db.models.functions.text import Length, Concat, Substr, CharField
-from drf_spectacular.utils import extend_schema
 from rest_framework.generics import (
     ListAPIView,
     ListCreateAPIView,
@@ -9,7 +8,6 @@ from rest_framework.generics import (
     RetrieveDestroyAPIView,
 )
 from rest_framework.pagination import PageNumberPagination
-from django.core.cache import cache
 from django.conf import settings
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
@@ -18,7 +16,6 @@ from django.core.files.storage import default_storage
 
 from .filters import NoteFilter
 from .permissions import IsOwnerOrReadOnly
-from .schemas.serializers import SchemaImageUploadResponseSerializer
 from .serializers import (
     NoteSerializer,
     CommentSerializer,
@@ -27,6 +24,7 @@ from .serializers import (
     NoteShortSerializer,
     ImageUploadSerializer,
 )
+from ..tasks import note_checker
 from ..models import Note, Comment, Tag
 
 
@@ -81,6 +79,7 @@ class NoteListCreateAPIView(ListCreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
+        note_checker.delay(serializer.instance.id)
 
 
 class NoteRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):

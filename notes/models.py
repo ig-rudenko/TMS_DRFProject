@@ -1,5 +1,9 @@
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+from notes.tasks import note_checker
 
 User = get_user_model()
 
@@ -12,6 +16,7 @@ class Note(models.Model):
 
     class Status(models.Choices):
         waiting = "waiting"
+        analyzing = "analyzing"
         published = "published"
         cancelled = "cancelled"
 
@@ -58,3 +63,14 @@ class Comment(models.Model):
     class Meta:
         db_table = "comments"
         ordering = ["-created_at"]
+
+
+# Вызывается в самом celery worker, не используем.
+# @receiver(post_save, sender=Note)
+# def post_save_note(sender, instance: Note, created: bool, **kwargs):
+#     print("Была сохранена запись", sender, instance, created, kwargs)
+#
+#     if created:
+#         # Если заметка была создана, а не обновлена.
+#         task_id = note_checker.delay(instance.id)  # Отправка задачи в брокер.
+#         print(task_id)
