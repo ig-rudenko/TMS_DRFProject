@@ -10,6 +10,9 @@ defineProps({
     type: Object as PropType<ShortNoteType>
   }
 })
+
+const emits = defineEmits(["select:owner"])
+
 </script>
 
 <template>
@@ -21,7 +24,7 @@ defineProps({
     <div class="flex justify-between">
       <div class="flex items-center gap-2">
         <Avatar :image="getAvatar(note.owner)"/>
-        <div>{{note.owner}}</div>
+        <div class="cursor-pointer" @click="emits('select:owner', note.owner)">{{note.owner}}</div>
       </div>
       <div class="flex items-center gap-1">
         <i class="pi pi-calendar"/>

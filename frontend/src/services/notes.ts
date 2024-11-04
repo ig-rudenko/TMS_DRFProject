@@ -70,6 +70,17 @@ class NoteService {
         return resp.data;
     }
 
+    async uploadImage(file: File) {
+        const formData = new FormData();
+        formData.append("image", file);
+        const resp = await api.post("/v1/upload-images", formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+        });
+        return resp.data;
+    }
+
 }
 
 export const noteService = new NoteService();
