@@ -94,6 +94,14 @@ TEMPLATES = [
 WSGI_APPLICATION = "TMS_DRFProject.wsgi.application"
 
 
+if os.getenv("DJANGO_REDIS_CACHE"):
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.redis.RedisCache",
+            "LOCATION": os.getenv("DJANGO_REDIS_CACHE"),
+        }
+    }
+
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 

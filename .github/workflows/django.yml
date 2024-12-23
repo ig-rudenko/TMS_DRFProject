@@ -6,8 +6,35 @@ on:
   pull_request:
     branches: [ "master" ]
 
+env:
+  DJANGO_PG_NAME: note_db
+  DJANGO_PG_USER: note_user
+  DJANGO_PG_PASSWORD: note_password
+  DJANGO_PG_HOST: 127.0.0.1
+  DJANGO_PG_PORT: 5432
+
+  DJANGO_REDIS_CACHE: redis://127.0.0.1:6379/0
+  CELERY_BROKER_URL: redis://127.0.0.1:6379/1
+  CELERY_RESULT_BACKEND: redis://127.0.0.1:6379/2
+
 jobs:
   test:
+
+    services:
+      cache:
+        image: redis:latest
+        ports:
+          - "6379:6379"
+
+      database:
+        image: postgres:17.2-alpine
+        env:
+          POSTGRES_USER: ${{env.DJANGO_PG_USER}}
+          POSTGRES_PASSWORD: ${{env.DJANGO_PG_PASSWORD}}
+          POSTGRES_DB: ${{env.DJANGO_PG_NAME}}
+        ports:
+          - "${{env.DJANGO_PG_PORT}}:5432"
+
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 3
