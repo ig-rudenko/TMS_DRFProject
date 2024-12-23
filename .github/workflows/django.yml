@@ -29,11 +29,11 @@ jobs:
       database:
         image: postgres:17.2-alpine
         env:
-          POSTGRES_USER: ${{env.DJANGO_PG_USER}}
-          POSTGRES_PASSWORD: ${{env.DJANGO_PG_PASSWORD}}
-          POSTGRES_DB: ${{env.DJANGO_PG_NAME}}
+          POSTGRES_USER: ${{ env.DJANGO_PG_USER }}
+          POSTGRES_PASSWORD: ${{ env.DJANGO_PG_PASSWORD }}
+          POSTGRES_DB: ${{ env.DJANGO_PG_NAME }}
         ports:
-          - "${{env.DJANGO_PG_PORT}}:5432"
+          - "${{ env.DJANGO_PG_PORT }}:5432"
 
     runs-on: ubuntu-latest
     strategy:
