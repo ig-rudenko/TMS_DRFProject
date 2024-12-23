@@ -33,7 +33,7 @@ jobs:
           POSTGRES_PASSWORD: ${{ env.DJANGO_PG_PASSWORD }}
           POSTGRES_DB: ${{ env.DJANGO_PG_NAME }}
         ports:
-          - ${{ env.DJANGO_PG_PORT }}:5432
+          - 5432:5432
 
     runs-on: ubuntu-latest
     strategy:
