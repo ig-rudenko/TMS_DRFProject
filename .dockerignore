@@ -1,0 +1,15 @@
+.venv
+venv
+.git
+.idea
+.env
+
+docs
+frontend
+media
+.dockerignore
+.gitignore
+celerybeat-schedule*
+db.sqlite3
+Dockerfile
+README.md

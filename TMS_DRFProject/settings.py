@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
+import os
 from datetime import timedelta
 from pathlib import Path
 
@@ -21,12 +21,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-gac9=-(u7-$ds*a9ovvu%58j$tl=bsoi3els6+^s4vd_vsz(i3"
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "django-insecure-gac9=-(u7-$ds*a9ovvu%58j$tl=bsoi3els6+^s4vd_vsz(i3")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DJANGO_DEBUG", "1") == "1"
 
-CSRF_TRUSTED_ORIGINS = ["http://localhost:5173"]
+if DEBUG:
+    CSRF_TRUSTED_ORIGINS = ["http://localhost:5173"]
 
 ALLOWED_HOSTS = []
 INTERNAL_IPS = [
@@ -96,12 +97,24 @@ WSGI_APPLICATION = "TMS_DRFProject.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+if os.getenv("DJANGO_PG_USER"):
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.getenv("DJANGO_PG_NAME"),
+            "USER": os.getenv("DJANGO_PG_USER"),
+            "PASSWORD": os.getenv("DJANGO_PG_PASSWORD"),
+            "HOST": os.getenv("DJANGO_PG_HOST"),
+            "PORT": os.getenv("DJANGO_PG_PORT"),
+        }
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
 
 
 SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
@@ -128,7 +141,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "ru-ru"
 
 TIME_ZONE = "UTC"
 
@@ -171,13 +184,13 @@ REST_FRAMEWORK = {
 
 # =================================================================
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=int(os.getenv("DJANGO_JWT_ACCESS_TOKEN_LIFETIME", 5))),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=int(os.getenv("DJANGO_JWT_REFRESH_TOKEN_LIFETIME", 24))),
     "ROTATE_REFRESH_TOKENS": False,
     "BLACKLIST_AFTER_ROTATION": False,
     "UPDATE_LAST_LOGIN": False,
     "ALGORITHM": "HS256",
-    "SIGNING_KEY": SECRET_KEY,
+    "SIGNING_KEY": os.getenv("DJANGO_JWT_SIGNING_KEY", SECRET_KEY),
     "VERIFYING_KEY": "",
     "AUDIENCE": None,
     "ISSUER": None,
@@ -213,8 +226,8 @@ SPECTACULAR_SETTINGS = {
 }
 
 
-CELERY_BROKER_URL = "redis://127.0.0.1:6379/0"
-CELERY_RESULT_BACKEND = "redis://127.0.0.1:6379/0"
+CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://127.0.0.1:6379/0")
+CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", "redis://127.0.0.1:6379/0")
 
 # Пример указания периодических задач
 # CELERY_BEAT_SCHEDULE = {
