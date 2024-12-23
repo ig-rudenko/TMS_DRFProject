@@ -7,8 +7,7 @@ on:
     branches: [ "master" ]
 
 jobs:
-  build:
-
+  test:
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 3
@@ -27,3 +26,15 @@ jobs:
         pip install -r requirements.txt
     - name: Run Tests
       run: python manage.py test
+
+  buid_docker:
+    needs:
+      - test
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build the Docker image
+        run: docker build . --file Dockerfile --tag notes:$(date +%s)

@@ -3,6 +3,7 @@ venv
 .git
 .idea
 .env
+.github
 
 docs
 frontend
